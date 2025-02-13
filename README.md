@@ -32,6 +32,7 @@ Examples:
 Usage [demo](https://asciinema.org/a/85699)
 
 ## Installation
+
 If you are using Linux, macOS or WSL you can use the following command
 
 ```sh
@@ -49,7 +50,7 @@ Test suite (suite_name.suite.json)
     |   ├ ignore [ignore test due to a specified reason]
     |   ├ args [value(s) for placeholders to use in request params, headers or body]
     │   ├ Call one
-    |   |   ├ args 
+    |   |   ├ args
     │   │   ├ on [single http request]
     │   │   ├ expect [http response asserts: code, headers, body, schema, etc.]
     │   │   └ remember [optionally remember variable(s) for the next call to use in request params, headers or body]
@@ -65,7 +66,6 @@ Test suite (suite_name.suite.json)
             ├ on
             ├ expect
             └ remember
-         
 
 ### Suite file extension
 
@@ -83,25 +83,32 @@ Represents http request parameters
     "method": "POST",
     "url": "/api/company/users",
     "headers": {
-        "Accept": "application/json",
-        "Content-Type": "application/json"
+      "Accept": "application/json",
+      "Content-Type": "application/json"
     },
     "params": {
-        "role": "admin"
+      "role": "admin"
     },
-    "bodyFile" : "admins.json"
+    "bodyFile": "admins.json"
   }
 }
 ```
 
 | Field    | Description                                                          |
-|----------|----------------------------------------------------------------------|
+| -------- | -------------------------------------------------------------------- |
 | method   | HTTP method                                                          |
 | url      | HTTP request URL                                                     |
 | headers  | HTTP request headers                                                 |
 | params   | HTTP query params                                                    |
 | bodyFile | File to send as a request payload (path relative to test suite json) |
 | body     | String or JSON object to send as a request payload                   |
+| options  | Fine tuning of request. See details in #Options chapter              |
+
+#### Options
+
+| Field           | Description                           |
+| --------------- | ------------------------------------- |
+| followRedirects | Follow HTTP redirects (default: true) |
 
 ### Section 'Expect'
 
@@ -123,14 +130,14 @@ Passing Test:
     "statusCode": 200,
     "contentType": "application/json",
     "bodyPath": {
-        "errors.size()": 1
+      "errors.size()": 1
     }
   }
 }
 ```
 
 | Assertion      | Description                                                                                                                                             | Example                                          |
-|----------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------|
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
 | statusCode     | Expected http response header 'Status Code'                                                                                                             | 200                                              |
 | contentType    | Expected http response 'Content-Type'                                                                                                                   | application/json                                 |
 | bodySchemaFile | Path to json schema to validate response body (path relative to test suite file)                                                                        | login-schema.json                                |
@@ -149,8 +156,8 @@ Response:
 ```json
 {
   "users": [
-    {"name":"John", "surname":"Wayne", "age": 38},
-    {"name":"John", "surname":"Doe", "age": 12}
+    { "name": "John", "surname": "Wayne", "age": 38 },
+    { "name": "John", "surname": "Doe", "age": 12 }
   ],
   "errors": []
 }
@@ -162,16 +169,13 @@ Could be used to partially match response body:
 {
   "expect": {
     "body": {
-      "users": [
-        {"name":"John", "age": 38}
-      ]
+      "users": [{ "name": "John", "age": 38 }]
     }
   }
 }
 ```
 
 Exact match (no new properties in the response) can be checked using "exactBody".
-
 
 #### 'Expect' body path matchers
 
@@ -180,8 +184,8 @@ Response:
 ```json
 {
   "users": [
-    {"name":"John", "surname":"Wayne", "age": 38},
-    {"name":"John", "surname":"Doe", "age": 12}
+    { "name": "John", "surname": "Wayne", "age": 38 },
+    { "name": "John", "surname": "Doe", "age": 12 }
   ],
   "errors": []
 }
@@ -193,20 +197,20 @@ Passing Test `expect` fragment:
 {
   "expect": {
     "bodyPath": {
-        "users.1.surname" : "Doe",
-        "users.name":"John",
-        "users": {
-          "name":"John",
-          "age": 12
-        },
-        "errors.size()": 0
+      "users.1.surname": "Doe",
+      "users.name": "John",
+      "users": {
+        "name": "John",
+        "age": 12
+      },
+      "errors.size()": 0
     }
   }
 }
 ```
 
 | Type   | Assertion                                                                             | Example                                               |
-|--------|---------------------------------------------------------------------------------------|-------------------------------------------------------|
+| ------ | ------------------------------------------------------------------------------------- | ----------------------------------------------------- |
 | equals | Root 'users' array zero element has value of 'id' equal to '123'                      | "users.0.id" : "123"                                  |
 | search | Root 'users' array contains element(s) with 'name' equal to 'Jack' or 'Dan' and 'Ron' | "users.name" : "Jack" or "users.name" : ["Dan","Ron"] |
 | size   | Root 'company' element has 'users' array with '22' elements within 'buildings' array  | "company.buildings.users.size()" : 22                 |
@@ -240,8 +244,8 @@ Placeholder values could be used inside `on.url`, `on.params`, `on.headers`, `on
 ```json
 {
   "args": {
-    "currencyCode" : "USD",
-    "magicNumber" : "12f"
+    "currencyCode": "USD",
+    "magicNumber": "12f"
   }
 }
 ```
@@ -283,7 +287,8 @@ Resulting data will contain "USD" and "12f" values instead of placeholders.
   }
 }
 ```
-__Duplicated or unused argements are reported as test failure__
+
+**Duplicated or unused argements are reported as test failure**
 
 ### Functions and data generation
 
@@ -379,27 +384,27 @@ This section allows more complex test scenarios like:
 
 ### Rewrite response location
 
-`--rewrite-response-location` flag allows to modify Location header of all response before they are passed to the expectations for verification. 
+`--rewrite-response-location` flag allows to modify Location header of all response before they are passed to the expectations for verification.
 Value is a go template with the following variable available
 
-| Name                     | Value                                                                                                                                                                                  |
-|--------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| response_header_location | - *url.URL variable containing parsed Location header. See available methods [here](https://pkg.go.dev/net/url#URL)<br/> - string if header contains relative URL or arbitrary content |
-| base_url                 | Base URL prefix for test calls. Command line argument provided with -H key                                                                                                             |
-| base_url_schema          | Schema value of the base url (http://example.com:8080 -> http)                                                                                                                         |
-| base_url_host            | Host value of the base_url (http://example.com:8080 -> example.com:8080)                                                                                                               |
-| base_url_hostname        | Hostname value of the base_url (http://example.com:8080 -> example.com)                                                                                                                |
-| base_url_port            | Port value of the base_url (http://example.com:8080 -> 8080)                                                                                                                           |
+| Name                     | Value                                                                                                                                                                                   |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| response_header_location | - \*url.URL variable containing parsed Location header. See available methods [here](https://pkg.go.dev/net/url#URL)<br/> - string if header contains relative URL or arbitrary content |
+| base_url                 | Base URL prefix for test calls. Command line argument provided with -H key                                                                                                              |
+| base_url_schema          | Schema value of the base url (http://example.com:8080 -> http)                                                                                                                          |
+| base_url_host            | Host value of the base_url (http://example.com:8080 -> example.com:8080)                                                                                                                |
+| base_url_hostname        | Hostname value of the base_url (http://example.com:8080 -> example.com)                                                                                                                 |
+| base_url_port            | Port value of the base_url (http://example.com:8080 -> 8080)                                                                                                                            |
 
-For example to fix HATEOAS links generated by the app with HTTPS-redirect enabled while running on localhost 
+For example to fix HATEOAS links generated by the app with HTTPS-redirect enabled while running on localhost
+
 ```sh
 bozr \
       -H http://127.0.0.1:8080/api \
       --header "X-Forwarded-Proto:https" \
       --rewrite-response-location="{{index . \"ctx:base_url\"}}{{.response_header_location.Path}}" \
       examples/rewrite-response.suite.json
-``` 
-
+```
 
 ### Using environment and context variables in tests
 
@@ -424,7 +429,7 @@ Context variables are available with `ctx` prefix
 List of context variables
 
 | Name              | Value                                                                      |
-|-------------------|----------------------------------------------------------------------------|
+| ----------------- | -------------------------------------------------------------------------- |
 | base_url          | Base URL prefix for test calls. Command line argument provided with -H key |
 | base_url_schema   | Schema value of the base url (http://example.com:8080 -> http)             |
 | base_url_host     | Host value of the base_url (http://example.com:8080 -> example.com:8080)   |
@@ -433,21 +438,20 @@ List of context variables
 
 ```json
 {
-  "expect" : {
+  "expect": {
     "bodyPath": {
-      "_links.delete" : "{ctx:base_url}/my-resource/123"
-    } 
+      "_links.delete": "{ctx:base_url}/my-resource/123"
+    }
   }
 }
 ```
-
 
 ## Editor integration
 
 To make work with test files convenient, we suggest to configure you text editors to use [this](./assets/test.schema.json) json schema. In this case editor will suggest what fields are available and highlight misspells.
 
 | Editor             | JSON Autocomplete                                                                          |
-|--------------------|--------------------------------------------------------------------------------------------|
+| ------------------ | ------------------------------------------------------------------------------------------ |
 | JetBrains Tools    | [native support](https://www.jetbrains.com/help/webstorm/2016.1/json-schema.html?page=1)   |
 | Visual Studio Code | [native support](https://code.visualstudio.com/docs/languages/json#_json-schemas-settings) |
 | Vim                | [plugin](https://github.com/Quramy/vison)                                                  |
