@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Options: Redirect control",
+    "calls": [
+      {
+        "on": {
+          "method": "GET",
+          "url": "https://httpstat.us/301",
+          "options": {
+            "followRedirects": false
+          }
+        },
+        "expect": {
+          "statusCode": 301,
+          "headers": {
+            "Location": "https://httpstat.us"
+          }
+        }
+      }
+    ]
+  }
+]

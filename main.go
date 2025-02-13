@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	version = "0.9.5"
+	version = "0.9.6"
 )
 
 func init() {
@@ -306,6 +306,12 @@ func call(requestConfig *RequestConfig, rewriteConfig *RewriteConfig, suitePath 
 	trace.RequestURL = req.URL.String()
 
 	client := &http.Client{}
+
+	if !on.Options.FollowRedirects {
+		client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		}
+	}
 
 	resp, err := client.Do(req)
 

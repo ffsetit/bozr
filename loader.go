@@ -380,6 +380,11 @@ const suiteDetailedSchema = `
                 "url": {
                   "type": "string"
                 },
+                "options": {
+                  "followRedirects": {
+                    "type": "boolean"
+                  }
+                },
                 "headers": {
                   "type": "object",
                   "minProperties": 1,
@@ -488,7 +493,7 @@ const suiteDetailedSchema = `
     },
     "additionalProperties": false,
     "required": [
-	  "name", 
+	  "name",
       "calls"
     ]
   }

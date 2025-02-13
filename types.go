@@ -80,6 +80,9 @@ type On struct {
 	Params   map[string]string `json:"params"`
 	Body     json.RawMessage   `json:"body"`
 	BodyFile string            `json:"bodyFile"`
+	Options  struct {
+		FollowRedirects bool `json:"followRedirects" default:"true"`
+	} `json:"options"`
 }
 
 // BodyContent returns request body content regardless of its source
